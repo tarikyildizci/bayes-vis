@@ -1,39 +1,36 @@
-import Link from "next/link"
+"use client"
 
-import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
+import { Form } from "@/components/ui/form"
+import { Form as VisForm } from "@/components/bayes-vis/Form"
+import { Visual } from "@/components/bayes-vis/Visual"
+
+const schema = z.object({
+  p_hypothesis: z.number(),
+  p_alt_hypothesis: z.number(),
+  p_evidence_given_h: z.number(),
+  p_evidence_given_alt_h: z.number(),
+})
+
+export type FormInputs = z.infer<typeof schema>
 
 export default function IndexPage() {
+  const methods = useForm<FormInputs>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      p_hypothesis: 50,
+    },
+  })
+
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-          Beautifully designed components <br className="hidden sm:inline" />
-          built with Radix UI and Tailwind CSS.
-        </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground">
-          Accessible and customizable components that you can copy and paste
-          into your apps. Free. Open Source. And Next.js 13 Ready.
-        </p>
+    <Form {...methods}>
+      <div className="h-full flex">
+        <Visual />
+        <VisForm />
       </div>
-      <div className="flex gap-4">
-        <Link
-          href={siteConfig.links.docs}
-          target="_blank"
-          rel="noreferrer"
-          className={buttonVariants()}
-        >
-          Documentation
-        </Link>
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          href={siteConfig.links.github}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          GitHub
-        </Link>
-      </div>
-    </section>
+    </Form>
   )
 }
